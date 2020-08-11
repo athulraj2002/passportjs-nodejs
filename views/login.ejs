@@ -5,19 +5,20 @@ place-content: center;">
         <div class="card card-body">
             <h1 class="text-center mb-3"> Login</h1>
             <%- include ('shared/message') %>
-            <form action="/users/login" method="POST">
+            <!-- <form action="/users/login" method="POST"> -->
+            <form id="myForm" name="myForm">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email"
-                    value="<%= typeof email != 'undefined' ? email : '' %>" />
+                        value="<%= typeof email != 'undefined' ? email : '' %>" />
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" class="form-control"
-                        placeholder="Enter Password" 
-                        value="<%= typeof password != 'undefined' ? password : '' %>"/>
+                        placeholder="Enter Password" value="<%= typeof password != 'undefined' ? password : '' %>" />
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <!-- <button type="submit" class="btn btn-primary btn-block">Login</button> -->
+                <button onclick="login(event)" class="btn btn-primary btn-block">Login</button>
             </form>
             <p class=" mt-4">
                 No Account? <a href="/users/signup">Register</a>
@@ -25,3 +26,43 @@ place-content: center;">
         </div>
     </div>
 </div>
+<script>
+    let response = null;
+    async function login(eve) {
+        eve.preventDefault();
+
+        let myForm = document.getElementById('myForm');
+        let formData = new FormData(myForm);
+        const payload = {
+            email: formData.get('email'),
+            password: formData.get('password'),
+        }
+
+        fetch('/users/login',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+
+            .then(val => val.json())
+            .then(res => {
+                response = res;
+                afterLogin(response)
+
+            })
+
+    }
+    function afterLogin(res) {
+        if(res.data){
+        localStorage.setItem('refToken', res.data.refreshToken );
+        window.location.href = '../dashboard';
+        }
+
+
+    }
+
+</script>

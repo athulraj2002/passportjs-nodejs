@@ -23,7 +23,8 @@ app.use(express.static("public"));
 app.use(expressLayout);
 app.set('view engine', 'ejs');
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
 app.use(
     session({
         secret: 'secret',
@@ -33,6 +34,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
 // Connect flash
 app.use(flash());
 
@@ -50,7 +52,7 @@ app.use('/users', userRouter);
 
 
 //Setting up PORT
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 
 

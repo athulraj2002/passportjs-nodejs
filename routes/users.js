@@ -67,15 +67,74 @@ router.post('/signup', (req, res) => {
     }
 
 });
-//User Login
+
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', {
-        successRedirect: '/dashboard',
-        failureRedirect: '/users/login',
-        failureFlash: true
-    })(req, res, next);
+    let errors = [];
+    let data = null;
+    if (req.body.email == '' || req.body.password == '') {
+        errors.push({ msg: 'Username or password not found' });
+        // res.render('login', {
+        //     errors
+        // })
+
+        res.status(400).json({ error: true, msg: 'Username or password not found' });
+    } else {
+        passport.authenticate('local', { session: false })(req, res, next => {
+            data = req.user
+            if (req.authInfo.message) {
+                errors.push({ msg: req.authInfo.message })
+
+                res.status(400).json({ error: true, msg: req.authInfo.message });
+                // res.render('login', {
+                //     errors
+                // })
+            } else {
+                // res.redirect()
+                // req.flash('error_msg', 'Please log in ');
+            //    return res.render('dashboard',{
+            //         user: data.user
+            //     });
+                res.status(200).json({ error: false, data: data.tokens, msg: 'Login Success' });
+            }
+        });
+    }
+
 });
 
+// passport.authenticate('local', {
+//     successRedirect: '/dashboard',
+//     failureRedirect: '/users/login',
+//     failureFlash: true
+// })
+
+
+// console.log(req);
+
+// res.status(200).json({
+// 	err: null,
+// 	msg: `Welcome`,
+// 	data: 'asdasdasdaad',
+// });
+
+//User Login
+// router.post('/login', passport.authenticate('jwt', { session: false }),
+//     function(req, res) {
+//         res.send(req.user.profile);
+//     }
+// );
+// router.post('/login', (req, res, next) => {
+//     passport.authenticate('jwt', { session: false }), (req, res, next);
+//     // let user = {
+//     //     'email': req.body.email,
+//     // }
+//     // console.log(req.body);
+
+//     // var token = jwt.sign(user, SECRET, { expiresIn: 300 })
+//     // var refreshToken = randtoken.uid(256);
+
+//     // refreshTokens[refreshToken] = res.json({ token: 'JWT ' + token, refreshToken: refreshToken })
+
+// });
 // Logout
 router.get('/logout', (req, res) => {
     req.logout();
